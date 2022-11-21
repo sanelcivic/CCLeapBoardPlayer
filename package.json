@@ -8,6 +8,8 @@
   "author": "Sanel.Civic",
   "scripts": {
     "start": "electron ."
+    "engines": {
+    "node": "18.x"
   },
   "dependencies": {
     "@electron-forge/cli": "6.0.3",
