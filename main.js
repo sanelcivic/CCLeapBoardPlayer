@@ -1,8 +1,8 @@
-const { app, BrowserWindow, powerSaveBlocker, dialog } = require('electron')
+const { app, BrowserWindow, powerSaveBlocker } = require('electron')
 const computerName = require('computer-name')
 var config = require( __dirname + '//config.json')
 powerSaveBlocker.start('prevent-display-sleep')
-const { autoUpdater } = require('electron-updater');
+require('update-electron-app')()
 let updateInterval = 10000;
 const fs = require("fs");
 var monitor = config.MONITOR;
@@ -35,18 +35,8 @@ var winston = require('winston');
   transport.on('rotate', function(oldFilename, newFilename) {
     // do something fun
   });
-autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
-   const dialogOpts = {
-      type: 'info',
-      buttons: ['Ok'],
-      title: 'Update Available',
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: 'A new version download started. The app will be restarted to install the update.'
-   };
-   dialog.showMessageBox(dialogOpts);
  
-   updateInterval = null;
-});
+
   var logger = winston.createLogger({
     transports: [
       transport
@@ -91,7 +81,6 @@ var internetAvailable = require("internet-available");
     onlineStatusWindow.loadFile('index.html')
     open = 0; }
 });
-autoUpdater.checkForUpdates();
 }, 100);
 setInterval(function(){
 app.relaunch()

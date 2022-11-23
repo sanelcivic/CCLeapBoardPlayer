@@ -4,11 +4,9 @@
   "description": "My Electron application description",
   "keywords": [],
   "main": "./main.js",
-  "version": "1.0.1",
-  "provider": "github",
-  "owner": "sanelcivic",
-  "repo": "CCLeapBoardPlayer",
+  "version": "1.0.0",
   "author": "Sanel.Civic",
+  "repository": "https://github.com/sanelcivic/CCLeapBoardPlayer",
   "scripts": {
     "start": "electron ."
   },
