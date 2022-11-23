@@ -1,10 +1,11 @@
-const { app, BrowserWindow, powerSaveBlocker, autoUpdater } = require('electron')
+const { app, BrowserWindow, powerSaveBlocker, dialog } = require('electron')
 const computerName = require('computer-name')
 var config = require( __dirname + '//config.json')
 powerSaveBlocker.start('prevent-display-sleep')
+const { autoUpdater } = require('electron-updater');
+let updateInterval = 10000;
 const fs = require("fs");
 var monitor = config.MONITOR;
-var path = require('path');
 if (monitor == 1){
   monitorsize = 0; }
   else
@@ -22,31 +23,7 @@ const createWindow = () => {
   var currentDate = '[' + new Date().toUTCString() + '] ';
 var winston = require('winston');
   require('winston-daily-rotate-file');
-const server = "https://vercel.com/sanelcivic/ccl-eap-board-player/GmTKHdwTWUkRpp6QvAA1HJyp2WN3"
 
-const url = '${server}/update/${process.platform}/${app.getVersion()}'
-setInterval(() => {
-  autoUpdater.checkForUpdates()
-}, 6000)
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-  const dialogOpts = {
-    type: 'info',
-    buttons: ['Restart', 'Later'],
-    title: 'Application Update',
-    message: process.platform === 'win32' ? releaseNotes : releaseName,
-    detail:
-      'A new version has been downloaded. Restart the application to apply the updates.',
-  }
-
-  dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
-  })
-})
-autoUpdater.on('error', (message) => {
-  console.error('There was a problem updating the application')
-  console.error(message)
-})
-autoUpdater.setFeedURL({ url })
   var transport = new winston.transports.DailyRotateFile({
     filename: 'application-%DATE%.log',
     datePattern: 'YYYY-MM-DD-HH',
@@ -58,7 +35,18 @@ autoUpdater.setFeedURL({ url })
   transport.on('rotate', function(oldFilename, newFilename) {
     // do something fun
   });
-
+autoUpdater.on("update-available", (_event, releaseNotes, releaseName) => {
+   const dialogOpts = {
+      type: 'info',
+      buttons: ['Ok'],
+      title: 'Update Available',
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: 'A new version download started. The app will be restarted to install the update.'
+   };
+   dialog.showMessageBox(dialogOpts);
+ 
+   updateInterval = null;
+});
   var logger = winston.createLogger({
     transports: [
       transport
@@ -103,6 +91,7 @@ var internetAvailable = require("internet-available");
     onlineStatusWindow.loadFile('index.html')
     open = 0; }
 });
+autoUpdater.checkForUpdates();
 }, 100);
 setInterval(function(){
 app.relaunch()
